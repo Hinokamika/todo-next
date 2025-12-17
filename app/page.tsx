@@ -1,11 +1,11 @@
 "use client";
 
 import {Progress} from "@/components/ui/progress";
-import Check from "@/app/icons/checked";
+import Check from "@/icons/checked";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import NoteCards from "@/app/components/note-cards"
+import NoteCards from "@/cli_components/note-cards"
 import React from "react";
 
 export default function Home() {
