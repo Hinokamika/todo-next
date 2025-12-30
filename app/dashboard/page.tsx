@@ -83,7 +83,7 @@ export default function TodoAppClient({ initialTodos = [] }: TodoAppClientProps)
       <nav className="w-full flex justify-center py-4 px-4 sm:px-10 border-b border-[#29382f]">
         <div className="w-full max-w-[960px] flex items-center justify-between">
           <div className="flex items-center gap-3 text-white">
-            <div className="flex items-center justify-center p-2 rounded-lg bg-[#36e27b]/20 text-[#36e27b]">
+            <div className="flex items-center justify-center p-2 rounded-full bg-[#36e27b]/20 text-[#36e27b]">
               <CheckCircle className="w-6 h-6" />
             </div>
             <h2 className="text-xl font-bold tracking-tight">Todo App</h2>
@@ -128,13 +128,13 @@ export default function TodoAppClient({ initialTodos = [] }: TodoAppClientProps)
         </div>
 
         <div className="relative w-full group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-[#36e27b] to-emerald-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-          <div className="relative flex items-center bg-[#1c2b24] rounded-2xl p-2 shadow-none border border-[#29382f]">
+          <div className="absolute -inset-1 bg-gradient-to-r from-[#36e27b] to-emerald-600 rounded-[20px] blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+          <div className="relative flex items-center bg-[#1c2b24] rounded-[20px] p-2 shadow-none border border-[#29382f]">
             <div className="pl-4 text-gray-400">
               <ClipboardList className="w-6 h-6" />
             </div>
             <input
-              className="w-full bg-transparent border-none focus:ring-0 text-lg text-white placeholder-[#9eb7a8] h-14 px-4 focus:outline-none"
+              className="w-full bg-transparent border-none focus:ring-0 text-lg text-white placeholder-[#9eb7a8] h-14 px-4 focus:outline-none "
               placeholder="What needs to be done?"
               type="text"
               value={newTaskInput}
@@ -143,14 +143,14 @@ export default function TodoAppClient({ initialTodos = [] }: TodoAppClientProps)
             />
             <AddTodoModal onSubmit={handleAddTodo}>
               <button
-                className="hidden sm:flex bg-[#36e27b] hover:bg-emerald-400 text-[#112117] font-bold px-8 h-12 rounded-xl items-center transition-colors cursor-pointer"
+                className="hidden sm:flex bg-[#36e27b] hover:bg-emerald-400 text-[#112117] font-bold px-8 h-12 rounded-[20px] items-center transition-colors cursor-pointer"
               >
                 Add
               </button>
             </AddTodoModal>
             <AddTodoModal onSubmit={handleAddTodo}>
                <button
-                className="sm:hidden bg-[#36e27b] hover:bg-emerald-400 text-[#112117] h-12 w-12 flex items-center justify-center rounded-xl transition-colors cursor-pointer"
+                className="sm:hidden bg-[#36e27b] hover:bg-emerald-400 text-[#112117] h-12 w-12 flex items-center justify-center rounded-[20px] transition-colors cursor-pointer"
               >
                 <Plus className="w-6 h-6" />
               </button>

@@ -1,6 +1,29 @@
-import { CheckCircle, Lock, Mail, Eye, Github } from "lucide-react";
+"use client"
 
-export default function LoginPage() {
+import { CheckCircle, Lock, Mail, Eye, Github, User } from "lucide-react";
+import { registerUser } from "@/lib/actions/register";
+import React from "react";
+
+export default function RegisterPage() {
+  const [email, setEmail] = React.useState("")
+  const [password, setPassword] = React.useState("")
+  const [name, setName] = React.useState("")
+  const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState<string | null>(null)
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+    try {
+      await registerUser(name, email, password);
+    } catch (error) {
+      setError("Failed to register user");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#112117] relative font-sans flex flex-col">
       {/* Header */}
@@ -34,17 +57,35 @@ export default function LoginPage() {
           </div>
 
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-white mb-2">Welcome Back</h1>
-            <p className="text-gray-400 text-sm">Enter your details to access your workspace.</p>
+            <h1 className="text-2xl font-bold text-white mb-2">Create Account</h1>
+            <p className="text-gray-400 text-sm">Join us to start organizing your tasks efficiently.</p>
           </div>
 
-          <form className="space-y-5">
+          <form className="space-y-5"
+          onSubmit={onSubmit}
+          >
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-300 uppercase tracking-wide ml-1">Full Name</label>
+              <div className="relative group">
+                <input 
+                  type="text" 
+                  placeholder="Username"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)} 
+                  className="w-full h-12 bg-[#112117] text-white rounded-xl border border-[#29382f] px-4 pl-4 pr-10 focus:outline-none focus:border-[#36e27b] focus:ring-1 focus:ring-[#36e27b] transition-all placeholder-gray-500"
+                />
+                <User className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-[#36e27b] transition-colors" />
+              </div>
+            </div>
+
             <div className="space-y-2">
               <label className="text-xs font-bold text-gray-300 uppercase tracking-wide ml-1">Email Address</label>
               <div className="relative group">
                 <input 
                   type="email" 
-                  placeholder="name@company.com" 
+                  placeholder=" Email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)} 
                   className="w-full h-12 bg-[#112117] text-white rounded-xl border border-[#29382f] px-4 pl-4 pr-10 focus:outline-none focus:border-[#36e27b] focus:ring-1 focus:ring-[#36e27b] transition-all placeholder-gray-500"
                 />
                 <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-[#36e27b] transition-colors" />
@@ -52,22 +93,24 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <div className="flex justify-between items-center ml-1">
-                 <label className="text-xs font-bold text-gray-300 uppercase tracking-wide">Password</label>
-                 <a href="#" className="text-xs font-bold text-[#36e27b] hover:text-emerald-400 transition-colors">Forgot Password?</a>
-              </div>
+              <label className="text-xs font-bold text-gray-300 uppercase tracking-wide ml-1">Password</label>
               <div className="relative group">
                 <input 
                   type="password" 
-                  placeholder="Enter your password" 
+                  placeholder="Password" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)} 
                   className="w-full h-12 bg-[#112117] text-white rounded-xl border border-[#29382f] px-4 pl-4 pr-10 focus:outline-none focus:border-[#36e27b] focus:ring-1 focus:ring-[#36e27b] transition-all placeholder-gray-500"
                 />
                 <Eye className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-[#36e27b] transition-colors cursor-pointer" />
               </div>
             </div>
 
-            <button className="w-full h-12 bg-[#36e27b] hover:bg-emerald-400 text-[#112117] font-bold rounded-xl transition-colors shadow-[0_0_20px_rgba(54,226,123,0.2)] hover:shadow-[0_0_30px_rgba(54,226,123,0.4)] flex items-center justify-center gap-2">
-              Sign In 
+            <button className="w-full h-12 bg-[#36e27b] hover:bg-emerald-400 text-[#112117] font-bold rounded-xl transition-colors shadow-[0_0_20px_rgba(54,226,123,0.2)] hover:shadow-[0_0_30px_rgba(54,226,123,0.4)] flex items-center justify-center gap-2"
+            type="submit"
+            disabled={loading}
+            >
+              Sign Up
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </button>
           </form>
@@ -110,7 +153,7 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-8 text-center text-sm text-gray-500">
-            Don't have an account? <a href="#" className="font-bold text-[#36e27b] hover:text-emerald-400 transition-colors">Sign up</a>
+            Already have an account? <a href="/login" className="font-bold text-[#36e27b] hover:text-emerald-400 transition-colors">Sign in</a>
           </div>
 
         </div>

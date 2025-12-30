@@ -1,4 +1,4 @@
-import TodoAppClient from "./components/todo-app/todo-app-client";
+import TodoAppClient from "./dashboard/page";
 import { getTodos } from "@/lib/getTodos";
 
 export default async function Home() {
