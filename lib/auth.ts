@@ -10,7 +10,12 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
 
   session: {
-    strategy: "database",
+    strategy: "jwt",
+  },
+
+  pages: {
+    signIn: "/auth/login",
+    newUser: "/auth/register", // redirect here after sign up
   },
 
   providers: [
@@ -59,4 +64,25 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
+
+  callbacks: {
+    jwt: async ({ token, user, account }) => {
+      if (user) {
+        token.id = user.id;
+      }
+      // Track provider on first sign in
+      if (account) {
+        token.provider = account.provider;
+      }
+      return token;
+    },
+
+    session: ({ session, token }) => {
+      if (token && session.user) {
+        session.user.id = token.id as string;
+        session.user.provider = token.provider as string;
+      }
+      return session;
+    },
+  },
 };

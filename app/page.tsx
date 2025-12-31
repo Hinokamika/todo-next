@@ -1,8 +1,8 @@
 import TodoAppClient from "./dashboard/page";
-import { getTodos } from "@/lib/getTodos";
+import { getUserTodos } from "@/lib/todos";
 
 export default async function Home() {
-    const initialTodos = await getTodos();
+    const todos = await getUserTodos();
 
-    return <TodoAppClient initialTodos={initialTodos} />;
+    return <TodoAppClient initialTodos={todos}/>;
 }

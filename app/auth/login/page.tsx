@@ -1,87 +1,97 @@
-"use client"
+"use client";
 
 import { CheckCircle, Lock, Mail, Eye, Github } from "lucide-react";
 import { signIn } from "next-auth/react";
-import { redirect } from "next/navigation";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 export default function LoginPage() {
-  const [email, setEmail] = React.useState("")
-    const [password, setPassword] = React.useState("")
-    const [name, setName] = React.useState("")
-    const [loading, setLoading] = React.useState(false)
-    const [error, setError] = React.useState<string | null>(null)
+  const router = useRouter();
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [name, setName] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
     try {
       const res = await signIn("credentials", {
         email,
         password,
         redirect: false,
-      })
+      });
 
-      setLoading(false)
+      setLoading(false);
       if (res?.error) {
-        setError(res.error)
+        setError(res.error);
       }
       if (res?.ok) {
-        redirect("/")
+        router.push("/");
       }
     } catch (error) {
-      
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }  
+  }
   return (
     <div className="min-h-screen bg-[#112117] relative font-sans flex flex-col">
       {/* Header */}
       <header className="w-full flex justify-between items-center py-6 px-4 sm:px-10 max-w-[1200px] mx-auto absolute top-0 left-0 right-0 z-10">
         <div className="flex items-center gap-2 text-white">
           <div className="flex items-center justify-center p-1.5 rounded-full bg-[#36e27b] text-[#112117]">
-            <CheckCircle className="w-5 h-5" fill="currentColor" stroke="none" />
+            <CheckCircle
+              className="w-5 h-5"
+              fill="currentColor"
+              stroke="none"
+            />
           </div>
           <span className="text-xl font-bold tracking-tight">TaskMaster</span>
         </div>
         <div className="flex items-center gap-6 text-sm font-medium text-gray-400">
-          <a href="#" className="hover:text-white transition-colors">Help</a>
-          <a href="#" className="hover:text-white transition-colors">Privacy</a>
+          <a href="#" className="hover:text-white transition-colors">
+            Help
+          </a>
+          <a href="#" className="hover:text-white transition-colors">
+            Privacy
+          </a>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center px-4 py-20 relative z-0">
-         {/* Background Glow Effect - subtle mimic of the screenshot */}
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[600px] h-[600px] bg-[#36e27b] opacity-[0.03] blur-[100px] rounded-full pointer-events-none"></div>
+        {/* Background Glow Effect - subtle mimic of the screenshot */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[600px] h-[600px] bg-[#36e27b] opacity-[0.03] blur-[100px] rounded-full pointer-events-none"></div>
 
         <div className="w-full max-w-[440px] bg-[#1c2b24] rounded-[32px] p-8 sm:p-10 border border-[#29382f] shadow-2xl relative">
-          
           {/* Lock Icon */}
           <div className="flex justify-center mb-6">
             <div className="w-12 h-12 bg-[#1c2b24] rounded-2xl flex items-center justify-center border border-[#29382f] shadow-sm">
-               <div className="p-2 bg-[#112117] rounded-xl">
-                 <Lock className="w-5 h-5 text-[#36e27b]" />
-               </div>
+              <div className="p-2 bg-[#112117] rounded-xl">
+                <Lock className="w-5 h-5 text-[#36e27b]" />
+              </div>
             </div>
           </div>
 
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-white mb-2">Welcome Back</h1>
-            <p className="text-gray-400 text-sm">Enter your details to access your workspace.</p>
+            <p className="text-gray-400 text-sm">
+              Enter your details to access your workspace.
+            </p>
           </div>
 
-          <form className="space-y-5"
-          onSubmit={onSubmit}
-          >
+          <form className="space-y-5" onSubmit={onSubmit}>
             <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-300 uppercase tracking-wide ml-1">Email Address</label>
+              <label className="text-xs font-bold text-gray-300 uppercase tracking-wide ml-1">
+                Email Address
+              </label>
               <div className="relative group">
-                <input 
-                  type="email" 
-                  placeholder="name@company.com" 
+                <input
+                  type="email"
+                  placeholder="name@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full h-12 bg-[#112117] text-white rounded-xl border border-[#29382f] px-4 pl-4 pr-10 focus:outline-none focus:border-[#36e27b] focus:ring-1 focus:ring-[#36e27b] transition-all placeholder-gray-500"
@@ -92,13 +102,20 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <div className="flex justify-between items-center ml-1">
-                 <label className="text-xs font-bold text-gray-300 uppercase tracking-wide">Password</label>
-                 <a href="#" className="text-xs font-bold text-[#36e27b] hover:text-emerald-400 transition-colors">Forgot Password?</a>
+                <label className="text-xs font-bold text-gray-300 uppercase tracking-wide">
+                  Password
+                </label>
+                <a
+                  href="#"
+                  className="text-xs font-bold text-[#36e27b] hover:text-emerald-400 transition-colors"
+                >
+                  Forgot Password?
+                </a>
               </div>
               <div className="relative group">
-                <input 
-                  type="password" 
-                  placeholder="Enter your password" 
+                <input
+                  type="password"
+                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full h-12 bg-[#112117] text-white rounded-xl border border-[#29382f] px-4 pl-4 pr-10 focus:outline-none focus:border-[#36e27b] focus:ring-1 focus:ring-[#36e27b] transition-all placeholder-gray-500"
@@ -107,10 +124,26 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <button className="w-full h-12 bg-[#36e27b] hover:bg-emerald-400 text-[#112117] font-bold rounded-xl transition-colors shadow-[0_0_20px_rgba(54,226,123,0.2)] hover:shadow-[0_0_30px_rgba(54,226,123,0.4)] flex items-center justify-center gap-2"
-            type="submit">
-              Sign In 
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            <button
+              className="w-full h-12 bg-[#36e27b] hover:bg-emerald-400 text-[#112117] font-bold rounded-xl transition-colors shadow-[0_0_20px_rgba(54,226,123,0.2)] hover:shadow-[0_0_30px_rgba(54,226,123,0.4)] flex items-center justify-center gap-2"
+              type="submit"
+            >
+              Sign In
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-arrow-right"
+              >
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
             </button>
           </form>
 
@@ -119,7 +152,9 @@ export default function LoginPage() {
               <span className="w-full border-t border-[#29382f]"></span>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-[#1c2b24] px-4 text-gray-500 font-medium">Or continue with</span>
+              <span className="bg-[#1c2b24] px-4 text-gray-500 font-medium">
+                Or continue with
+              </span>
             </div>
           </div>
 
@@ -151,10 +186,15 @@ export default function LoginPage() {
             </button>
           </div>
 
-          <div className="mt-8 text-center text-sm text-gray-500">
-            Don't have an account? <a href="#" className="font-bold text-[#36e27b] hover:text-emerald-400 transition-colors">Sign up</a>
+          <div className="mt-8 text-center text-sm text-gray-400">
+            Don't have an account?{" "}
+            <Link
+              href="/auth/register"
+              className="font-bold text-[#36e27b] hover:text-emerald-400 transition-colors"
+            >
+              Sign up
+            </Link>
           </div>
-
         </div>
       </main>
     </div>

@@ -1,59 +1,62 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useLocalStorageTodos } from "@/hook/useLocalStorageTodos";
+import React, { useState } from "react";
 import { Todo } from "@/types/todo";
-import { Check, Edit2, Trash2, Plus, ClipboardList, CheckCircle, LogOut } from "lucide-react";
+import {
+  Check,
+  Edit2,
+  Trash2,
+  ClipboardList,
+  CheckCircle,
+  LogOut,
+} from "lucide-react";
+import { signOut } from "next-auth/react";
 
 import AddTodoModal from "@/cli_components/add-todo-modal";
+import { addTodo } from "@/lib/todos";
 
 interface TodoAppClientProps {
   initialTodos?: Todo[];
 }
 
-export default function TodoAppClient({ initialTodos = [] }: TodoAppClientProps) {
-  const [todos, setTodos] = useLocalStorageTodos();
-  const [isInitialized, setIsInitialized] = useState(false);
+export default function TodoAppClient({
+  initialTodos = [],
+}: TodoAppClientProps) {
+  const [todos, setTodos] = useState<Todo[]>(initialTodos);
   const [newTaskInput, setNewTaskInput] = useState("");
+  const [siteTask, setSiteTask] = useState("");
   const [filter, setFilter] = useState<"All" | "Pending" | "Completed">("All");
 
-  // Initialize with server-provided todos if localStorage is empty
-  useEffect(() => {
-    if (!isInitialized && todos.length === 0 && initialTodos.length > 0) {
-      setTodos(initialTodos);
-      setIsInitialized(true);
-    }
-  }, [isInitialized, initialTodos, todos, setTodos]);
-
-  const handleAddTodo = (data: { name: string; description: string }) => {
-      const newId = (
-        todos.length > 0 ? Math.max(...todos.map((t) => parseInt(t.id))) + 1 : 1
-      ).toString();
-      const newTodoItem: Todo = {
-        id: newId,
-        content: data.name,
-        site_content: data.description,
-        completed: false,
-      };
-      const newTodos = [...todos, newTodoItem];
-      setTodos(newTodos);
+  const editTodo = (id: string) => {
+    // TODO: Implement edit functionality
+    console.log("Edit todo", id);
   };
 
-  const addTodo = () => {
-    if (newTaskInput.trim() === "") return;
-    handleAddTodo({ name: newTaskInput, description: "" });
+  const submitTodo = async (data?: {
+    content: string;
+    site_content: string;
+  }) => {
+    const finalContent = data?.content || newTaskInput;
+    const finalSiteContent = data?.site_content || siteTask;
+
+    if (finalContent.trim() === "") return;
+    const newTodoItem = await addTodo(finalContent, finalSiteContent, false);
+    setTodos([...todos, newTodoItem]);
     setNewTaskInput("");
+    setSiteTask("");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      addTodo();
+      submitTodo();
     }
   };
 
   const toggleTodo = (id: string, checked: boolean) => {
     setTodos(
-      todos.map((todo) => (todo.id === id ? { ...todo, completed: checked } : todo))
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: checked } : todo
+      )
     );
   };
 
@@ -74,9 +77,7 @@ export default function TodoAppClient({ initialTodos = [] }: TodoAppClientProps)
   const completedCount = todos.filter((task) => task.completed).length;
   const pendingCount = todos.filter((task) => !task.completed).length;
   const completionPercentage =
-    todos.length > 0
-      ? Math.round((completedCount / todos.length) * 100)
-      : 0;
+    todos.length > 0 ? Math.round((completedCount / todos.length) * 100) : 0;
 
   return (
     <>
@@ -89,7 +90,10 @@ export default function TodoAppClient({ initialTodos = [] }: TodoAppClientProps)
             <h2 className="text-xl font-bold tracking-tight">Todo App</h2>
           </div>
           <div className="flex items-center gap-4">
-            <button className="hidden sm:flex items-center justify-center h-10 px-6 rounded-full bg-[#1c2b24] border border-[#29382f] text-sm font-medium hover:bg-[#29382f] transition-colors text-white">
+            <button
+              className="hidden sm:flex items-center justify-center h-10 px-6 rounded-full bg-[#1c2b24] border border-[#29382f] text-sm font-medium hover:bg-[#29382f] transition-colors text-white"
+              onClick={() => signOut()}
+            >
               <LogOut className="w-5 h-5 mr-2" />
               Log Out
             </button>
@@ -141,18 +145,9 @@ export default function TodoAppClient({ initialTodos = [] }: TodoAppClientProps)
               onChange={(e) => setNewTaskInput(e.target.value)}
               onKeyDown={handleKeyDown}
             />
-            <AddTodoModal onSubmit={handleAddTodo}>
-              <button
-                className="hidden sm:flex bg-[#36e27b] hover:bg-emerald-400 text-[#112117] font-bold px-8 h-12 rounded-[20px] items-center transition-colors cursor-pointer"
-              >
+            <AddTodoModal onSubmit={submitTodo}>
+              <button className="hidden sm:flex bg-[#36e27b] hover:bg-emerald-400 text-[#112117] font-bold px-8 h-12 rounded-[20px] items-center transition-colors cursor-pointer">
                 Add
-              </button>
-            </AddTodoModal>
-            <AddTodoModal onSubmit={handleAddTodo}>
-               <button
-                className="sm:hidden bg-[#36e27b] hover:bg-emerald-400 text-[#112117] h-12 w-12 flex items-center justify-center rounded-[20px] transition-colors cursor-pointer"
-              >
-                <Plus className="w-6 h-6" />
               </button>
             </AddTodoModal>
           </div>
@@ -186,6 +181,7 @@ export default function TodoAppClient({ initialTodos = [] }: TodoAppClientProps)
             >
               <label className="relative flex items-center cursor-pointer">
                 <input
+                  title="Toggle"
                   type="checkbox"
                   checked={todo.completed}
                   onChange={(e) => toggleTodo(todo.id, e.target.checked)}
@@ -198,22 +194,27 @@ export default function TodoAppClient({ initialTodos = [] }: TodoAppClientProps)
               <div className="ml-4 flex-1">
                 <p
                   className={`text-lg font-medium transition-colors ${
-                    todo.completed
-                      ? "text-gray-500 line-through"
-                      : "text-white"
+                    todo.completed ? "text-gray-500 line-through" : "text-white"
                   }`}
                 >
                   {todo.content}
                 </p>
                 {!todo.completed && todo.site_content && (
-                   <p className="text-xs text-[#36e27b] font-medium mt-0.5">{todo.site_content}</p>
+                  <p className="text-xs text-[#36e27b] font-medium mt-0.5">
+                    {todo.site_content}
+                  </p>
                 )}
               </div>
               <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button className="p-2 hover:bg-[#29382f] rounded-full text-[#9eb7a8] transition-colors cursor-pointer">
+                <button
+                  title="Edit"
+                  onClick={() => editTodo(todo.id)}
+                  className="p-2 hover:bg-[#29382f] rounded-full text-[#9eb7a8] transition-colors cursor-pointer"
+                >
                   <Edit2 className="w-5 h-5" />
                 </button>
                 <button
+                  title="Delete"
                   onClick={() => deleteTodo(todo.id)}
                   className="p-2 hover:bg-red-900/20 rounded-full text-[#9eb7a8] hover:text-red-500 transition-colors cursor-pointer"
                 >
@@ -224,9 +225,9 @@ export default function TodoAppClient({ initialTodos = [] }: TodoAppClientProps)
           ))}
 
           {filteredTodos.length === 0 && (
-             <div className="text-center py-10 text-[#9eb7a8]">
-                 <p>No tasks found in this filter.</p>
-             </div>
+            <div className="text-center py-10 text-[#9eb7a8]">
+              <p>No tasks found in this filter.</p>
+            </div>
           )}
         </div>
 
